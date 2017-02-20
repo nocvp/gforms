@@ -6,9 +6,13 @@ import (
 )
 
 const defaultTemplates = `
-{{define "TextTypeField"}}<input type="text" name="{{.Field.GetName | html}}" value="{{.Value | html}}"></input>{{end}}
+{{define "TextTypeField"}}<input type="text" name="{{.Field.GetName | html}}" value="{{.Value | html}}" />{{end}}
+{{define "TextareaTypeField"}}<textarea type="text" name="{{.Field.GetName | html}}">{{.Value | html}}</textarea>{{end}}
+{{define "FileTypeField"}}<input type="{{.Type | html}}" name="{{.Field.GetName | html}}"/>{{end}}
 {{define "BooleanTypeField"}}<input type="checkbox" name="{{.Field.GetName | html}}"{{if .Checked}} checked{{end}}>{{end}}
-{{define "SimpleWidget"}}<input type="{{.Type | html}}" name="{{.Field.GetName | html}}" value="{{.Value | html}}"{{range $attr, $val := .Attrs}} {{$attr | html}}="{{$val | html}}"{{end}}></input>{{end}}
+{{define "SimpleWidget"}}<input type="{{.Type | html}}" name="{{.Field.GetName | html}}" value="{{.Value | html}}"{{range $attr, $val := .Attrs}} {{$attr | html}}="{{$val | html}}"{{end}} />{{end}}
+{{define "FileInputWidget"}}<input type="{{.Type | html}}" name="{{.Field.GetName | html}}" {{range $attr, $val := .Attrs}} {{$attr | html}}="{{$val | html}}"{{end}} />{{end}}
+{{define "TextareaWidget"}}<textarea type="{{.Type | html}}" name="{{.Field.GetName | html}}"{{range $attr, $val := .Attrs}} {{$attr | html}}="{{$val | html}}"{{end}}>{{.Value | html}}</textarea>{{end}}
 {{define "SelectWidget"}}<select {{if .Multiple }}multiple {{end}}name="{{.Field.GetName | html}}"{{range $attr, $val := .Attrs}}{{$attr | html}}="{{$val | html}}"{{end}}>
 {{range $idx, $val := .Options}}<option value="{{$val.Value | html}}"{{if $val.Selected }} selected{{end}}{{if $val.Disabled}} disabled{{end}}>{{$val.Label | html}}</option>
 {{end}}</select>{{end}}

@@ -3,8 +3,15 @@ package gforms
 import (
 	"errors"
 	"fmt"
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	"reflect"
 	"regexp"
+	"strings"
+)
+
+var (
+	ErrCountRows = errors.New("Kayıt sayısı hesaplarken hata oluştu.")
 )
 
 type Validator interface {
@@ -32,7 +39,17 @@ func Required(message ...string) required {
 
 func (vl required) Validate(fi *FieldInstance, fo *FormInstance) error {
 	v := fi.V
-	if v.IsNil || (v.Kind == reflect.String && v.Value == "") {
+	if v.IsNil {
+		return errors.New(vl.Message)
+	}
+	if v.Kind == reflect.Struct {
+		t := reflect.TypeOf(v.Value)
+		ts := t.Kind().String()
+		if ts == "slice" && strings.Trim(t.String(), " ") == "[]string"{
+			return errors.New(vl.Message)
+		}
+	}
+	if v.Kind == reflect.String && v.Value == "" {
 		return errors.New(vl.Message)
 	}
 	return nil
@@ -209,4 +226,51 @@ func URLValidator(message ...string) regexpValidator {
 	} else {
 		return RegexpValidator(regex, "Enter a valid url.")
 	}
+}
+
+type noRecordExistsValidator struct {
+	table       string
+	field       string
+	excludeSelf bool
+	Message     string
+	Validator
+}
+
+func NoRecordExistsValidator(table string, field string, excludeSelf bool, message ...string) noRecordExistsValidator {
+	vl := noRecordExistsValidator{}
+	vl.table = table
+	vl.field = field
+	vl.excludeSelf = excludeSelf
+	if len(message) > 0 {
+		vl.Message = message[0]
+	} else {
+		vl.Message = "Record already exists."
+	}
+	return vl
+}
+
+func (vl noRecordExistsValidator) Validate(fi *FieldInstance, fo *FormInstance) error {
+	v := fi.V
+	if v.IsNil || v.Kind != reflect.String || v.Value == "" {
+		return nil
+	}
+	s := v.Value.(string)
+
+	o := orm.NewOrm()
+	qs := o.QueryTable(vl.table)
+	qs = qs.Filter(vl.field, s)
+	count, err := qs.Count()
+	if err != nil {
+		beego.Error(err)
+		return ErrCountRows
+	}
+	var countEq int64
+	if vl.excludeSelf {
+		countEq = 1
+	}
+	if count > countEq {
+		beego.Error("Record already exists, table: " + vl.table + ", field: " + vl.field + ", value: " + s)
+		return errors.New(vl.Message)
+	}
+	return nil
 }

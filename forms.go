@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"reflect"
 	"time"
+	"fmt"
 )
 
 type Form func(...*http.Request) *FormInstance
@@ -208,6 +209,12 @@ func (fi *FormInstance) MapTo(model interface{}) {
 					value, ok := v.(time.Time)
 					if !ok {
 						value = time.Time{}
+					}
+					workField.Set(reflect.ValueOf(value))
+				case "gforms.ReceivedFile":
+					value, ok := v.(ReceivedFile)
+					if !ok {
+						fmt.Println("received file can not cast")
 					}
 					workField.Set(reflect.ValueOf(value))
 				}

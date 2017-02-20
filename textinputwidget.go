@@ -11,8 +11,13 @@ type textInputWidget struct {
 }
 
 func (wg *textInputWidget) html(f FieldInterface) string {
+	t := "SimpleWidget"
+	if wg.Attrs["data-type"] == "textarea" {
+		t = "TextareaWidget"
+	}
+
 	var buffer bytes.Buffer
-	err := Template.ExecuteTemplate(&buffer, "SimpleWidget", widgetContext{
+	err := Template.ExecuteTemplate(&buffer, t, widgetContext{
 		Type:  wg.Type,
 		Field: f,
 		Attrs: wg.Attrs,

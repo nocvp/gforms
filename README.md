@@ -1,5 +1,5 @@
 # GForms
-A flexible forms validation and rendering library for golang web development. 
+A flexible forms validation and rendering library for golang web development.
 Inspired by [django-forms](https://docs.djangoproject.com/en/dev/topics/forms/) and [wtforms](https://github.com/wtforms/wtforms).
 
 [![wercker status](https://app.wercker.com/status/51a7f6720baf8e67a28241790380d19b/s "wercker status")](https://app.wercker.com/project/bykey/51a7f6720baf8e67a28241790380d19b)
@@ -16,12 +16,12 @@ Inspired by [django-forms](https://docs.djangoproject.com/en/dev/topics/forms/) 
 ## Install
 
 ```
-go get github.com/bluele/gforms
+go get gitlab.noc.com.tr/gomodules/gforms
 ```
 
 ## Examples
 
-See [examples](https://github.com/bluele/gforms/tree/master/examples).
+See [examples](https://gitlab.noc.com.tr/gomodules/gforms/tree/master/examples).
 
 ## Usage
 
@@ -45,7 +45,7 @@ userForm := gforms.DefineForm(gforms.NewFields(
 
 ### Validate HTTP request
 
-Server ([code](https://github.com/bluele/gforms/blob/master/examples/simple_form.go)):
+Server ([code](https://gitlab.noc.com.tr/gomodules/gforms/blob/master/examples/simple_form.go)):
 
 ```go
 type User struct {
@@ -170,7 +170,7 @@ func initForm() {
 ```go
 form := userForm(r)
 fmt.Println(form.Html())
-/* 
+/*
 # Output
 <input type="text" name="name"></input>
 <input type="text" name="weight"></input>
@@ -182,7 +182,7 @@ fmt.Println(form.Html())
 ```
 form := userForm(r)
 fmt.Println(form.GetField("name").Html())
-/* 
+/*
 # Output
 <input type="text" name="name"></input>
 */
@@ -194,7 +194,7 @@ fmt.Println(form.GetField("name").Html())
 
 ```go
 http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-  form := userForm(r)  
+  form := userForm(r)
   ...
 }
 ```
@@ -227,7 +227,7 @@ customForm := gforms.DefineForm(gforms.NewFields(
 
 form := customForm(r)
 fmt.Println(form.Html())
-/* 
+/*
 # Output
 <input type="text" name="name" value="" class="custom"></input>
 */
@@ -310,9 +310,9 @@ It maps value to FormInstance.CleanedData as type `time.Time`.
 
 ```go
 gforms.NewDateTimeField(
-  "date", 
-  DefaultDateTimeFormat, 
-  gforms.Validators{},  
+  "date",
+  DefaultDateTimeFormat,
+  gforms.Validators{},
 )
 ```
 
@@ -454,7 +454,7 @@ Form := gforms.DefineForm(gforms.NewFields(
           })
         },
       ),
-    ),  
+    ),
 ))
 
 form = Form()

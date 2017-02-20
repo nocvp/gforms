@@ -3,7 +3,9 @@ package gforms
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -11,7 +13,13 @@ import (
 	"unicode"
 	"unicode/utf16"
 	"unicode/utf8"
+	"strings"
 )
+
+type ReceivedFile struct {
+	Name   string
+	Binary multipart.File
+}
 
 func bindRequest(req *http.Request) (*Data, error) {
 	if isNilValue(req) {
@@ -66,11 +74,30 @@ func bindJson(req *http.Request) (*Data, error) {
 }
 
 func bindForm(req *http.Request) (*Data, error) {
-	req.ParseForm()
 	data := Data{}
 	for name, v := range req.Form {
 		if len(v) != 0 {
 			data[name] = newV(v[0], v, reflect.String)
+		}
+	}
+	if strings.Fields(req.Header.Get("Content-Type"))[0] == "multipart/form-data;" {
+		req.ParseMultipartForm(0)
+		var err error
+		for fname, fheaders := range req.MultipartForm.File {
+			for _, hdr := range fheaders {
+				var infile multipart.File
+				if infile, err = hdr.Open(); nil != err {
+					fmt.Println(err)
+				}
+
+				if hdr.Filename != "" {
+					file := ReceivedFile{
+						Name:   hdr.Filename,
+						Binary: infile,
+					}
+					data[fname] = newV(fname, file, reflect.Struct)
+				}
+			}
 		}
 	}
 	return &data, nil

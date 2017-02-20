@@ -49,7 +49,12 @@ func (f *TextFieldInstance) Clean(data Data) error {
 }
 
 func (f *TextFieldInstance) html() string {
-	return renderTemplate("TextTypeField", newTemplateContext(f))
+	t := "TextTypeField"
+	w, ok := f.GetWidget().(*textInputWidget)
+	if ok && w.Attrs["data-type"] == "textarea" {
+		t = "TextareaTypeField"
+	}
+	return renderTemplate(t, newTemplateContext(f))
 }
 
 // Get as HTML format.

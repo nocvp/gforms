@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 	"testing"
+	"time"
 )
 
 func TestSimpleMapToSuccess(t *testing.T) {
